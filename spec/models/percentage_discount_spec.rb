@@ -34,4 +34,16 @@ describe 'PercentageDiscount' do
     include_examples 'attribute initialization', :@percentage, Float
     include_examples 'attribute initialization', :@threshold, Integer
   end
+
+  describe '#apply' do
+    it 'should take two arguments (the original price and the product quantity)' do
+      expect(percentage_discount).to respond_to(:apply)
+      expect(PercentageDiscount.instance_method(:apply).arity).to eq(2)
+    end
+
+    it 'should return the correct values' do
+      expect(percentage_discount.apply(9, 10)).to eq(60)
+      expect(percentage_discount.apply(9.9, 10)).to eq(66)
+    end
+  end
 end
