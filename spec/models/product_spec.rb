@@ -12,4 +12,24 @@ describe 'Product' do
     puts "empty_product: #{empty_product.inspect}"
     puts "product: #{product.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take one argument or none' do
+      expect(Product.instance_method(:initialize).arity).to eq(-1)
+      expect(product).to be_a(Product)
+      expect(empty_product).to be_a(Product)
+    end
+
+    shared_examples 'attribute initialization' do |attribute, product_class|
+      it "should initialize the instance with a #{attribute} variable" do
+        expect(product.instance_variable_defined?(attribute)).to be(true)
+        expect(product.instance_variable_get(attribute)).to be_a(product_class)
+        expect(empty_product.instance_variable_get(attribute)).to be_a(NilClass)
+      end
+    end
+
+    include_examples 'attribute initialization', :@code, String
+    include_examples 'attribute initialization', :@name, String
+    include_examples 'attribute initialization', :@price, Float
+  end
 end
