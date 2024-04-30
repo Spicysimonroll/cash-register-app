@@ -1,0 +1,2 @@
+class BulkPurchaseDiscount < Discount
+end
