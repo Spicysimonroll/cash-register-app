@@ -27,4 +27,18 @@ describe 'Discount' do
     include_examples 'attribute initialization', :@name, String
     include_examples 'attribute initialization', :@amount, Integer
   end
+
+  describe '#apply' do
+    it 'should take an argument (the total price)' do
+      expect(discount).to respond_to(:apply)
+      expect(Discount.instance_method(:apply).arity).to eq(1)
+    end
+
+    it 'should return the correct discounted price' do
+      expect(discount.apply(25)).to eq(20)
+
+      other_discount = Discount.new('€15 discount', 15)
+      expect(other_discount.apply(45)).to eq(30)
+    end
+  end
 end
