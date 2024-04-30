@@ -15,4 +15,23 @@ describe 'BulkPurchaseDiscount' do
   it 'should generate test data' do
     puts "bulk_purchase_discount: #{bulk_purchase_discount.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take four arguments' do
+      expect(BulkPurchaseDiscount.instance_method(:initialize).arity).to eq(4)
+      expect(bulk_purchase_discount).to be_a(BulkPurchaseDiscount)
+    end
+
+    shared_examples 'attribute initialization' do |attribute, type|
+      it "should initialize the instance with a #{attribute} variable" do
+        expect(bulk_purchase_discount.instance_variable_defined?(attribute)).to be(true)
+        expect(bulk_purchase_discount.instance_variable_get(attribute)).to be_a(type)
+      end
+    end
+
+    include_examples 'attribute initialization', :@name, String
+    include_examples 'attribute initialization', :@amount, Integer
+    include_examples 'attribute initialization', :@discounted_price, Float
+    include_examples 'attribute initialization', :@threshold, Integer
+  end
 end
