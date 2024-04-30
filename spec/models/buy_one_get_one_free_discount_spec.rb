@@ -5,4 +5,8 @@ describe 'BuyOneGetOneFreeDiscount' do
   it 'should be a class' do
     expect(Object.const_defined?('BuyOneGetOneFreeDiscount')).to be(true)
   end
+
+  it 'should be inheriting Discount class' do
+    expect(BuyOneGetOneFreeDiscount.superclass).to be(Discount)
+  end
 end
