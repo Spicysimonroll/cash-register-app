@@ -32,4 +32,18 @@ describe 'BuyOneGetOneFreeDiscount' do
     include_examples 'attribute initialization', :@name, String
     include_examples 'attribute initialization', :@amount, Integer
   end
+
+  describe '#apply' do
+    it 'should take two arguments (the original price and the quantity)' do
+      expect(buy_one_get_one_free_discount).to respond_to(:apply)
+      expect(BuyOneGetOneFreeDiscount.instance_method(:apply).arity).to eq(2)
+    end
+
+    it 'should return the correct discounted price' do
+      expect(buy_one_get_one_free_discount.apply(10, 1)).to eq(10)
+      expect(buy_one_get_one_free_discount.apply(10, 2)).to eq(10)
+      expect(buy_one_get_one_free_discount.apply(10, 3)).to eq(20)
+      expect(buy_one_get_one_free_discount.apply(10, 5)).to eq(30)
+    end
+  end
 end
