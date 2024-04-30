@@ -44,4 +44,16 @@ describe 'Product' do
       expect(empty_product.code).to eq(nil)
     end
   end
+
+  describe '#name' do
+    it 'should allow read-only access' do
+      expect(product).to respond_to(:name)
+      expect(product).not_to respond_to(:name=)
+    end
+
+    it 'should return the correct name' do
+      expect(product.name).to eq('Coffee')
+      expect(empty_product.name).to eq(nil)
+    end
+  end
 end
