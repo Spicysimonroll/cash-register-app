@@ -56,4 +56,16 @@ describe 'Product' do
       expect(empty_product.name).to eq(nil)
     end
   end
+
+  describe '#price' do
+    it 'should allow read-only access' do
+      expect(product).to respond_to(:price)
+      expect(product).not_to respond_to(:price=)
+    end
+
+    it 'should return the correct price' do
+      expect(product.price).to eq(11.23)
+      expect(empty_product.price).to eq(nil)
+    end
+  end
 end
