@@ -10,4 +10,21 @@ describe 'Discount' do
   it 'should generate test data' do
     puts "discount: #{discount.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take two arguments' do
+      expect(Discount.instance_method(:initialize).arity).to eq(2)
+      expect(discount).to be_a(Discount)
+    end
+
+    shared_examples 'attribute initialization' do |attribute, type|
+      it "should initialize the instance with a #{attribute} variable" do
+        expect(discount.instance_variable_defined?(attribute)).to be(true)
+        expect(discount.instance_variable_get(attribute)).to be_a(type)
+      end
+    end
+
+    include_examples 'attribute initialization', :@name, String
+    include_examples 'attribute initialization', :@amount, Integer
+  end
 end
