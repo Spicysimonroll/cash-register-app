@@ -34,4 +34,16 @@ describe 'BulkPurchaseDiscount' do
     include_examples 'attribute initialization', :@discounted_price, Float
     include_examples 'attribute initialization', :@threshold, Integer
   end
+
+  describe '#apply' do
+    it 'should take two arguments (the original price and the product quantity)' do
+      expect(bulk_purchase_discount).to respond_to(:apply)
+      expect(BulkPurchaseDiscount.instance_method(:apply).arity).to eq(2)
+    end
+
+    it 'should return the correct discounted price' do
+      expect(bulk_purchase_discount.apply(9, 10)).to eq(45)
+      expect(bulk_purchase_discount.apply(5, 3)).to eq(13.5)
+    end
+  end
 end
