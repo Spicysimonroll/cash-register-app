@@ -32,4 +32,16 @@ describe 'Product' do
     include_examples 'attribute initialization', :@name, String
     include_examples 'attribute initialization', :@price, Float
   end
+
+  describe '#code' do
+    it 'should allow read-only access' do
+      expect(product).to respond_to(:code)
+      expect(product).not_to respond_to(:code=)
+    end
+
+    it 'should return the correct code' do
+      expect(product.code).to eq('CF1')
+      expect(empty_product.code).to eq(nil)
+    end
+  end
 end
