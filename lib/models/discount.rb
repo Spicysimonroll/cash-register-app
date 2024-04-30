@@ -3,4 +3,8 @@ class Discount
     @name = name
     @amount = amount
   end
+
+  def apply(total_price)
+    total_price - @amount
+  end
 end
