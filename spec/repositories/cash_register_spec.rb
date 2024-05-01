@@ -57,4 +57,23 @@ describe 'CashRegister' do
     puts "cart3_with_headers: #{cart3_with_headers.inspect}"
     puts "@cash_register: #{@cash_register.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take two arguments' do
+      expect(CashRegister.instance_method(:initialize).arity).to eq(2)
+      expect(@cash_register).to be_a(CashRegister)
+    end
+
+    it 'should have loaded existing products in inventory.csv' do
+      expect(@cash_register).to respond_to(:inventory)
+      expect(@cash_register.inventory.size).to eq(inventory_with_headers.size - 1)
+      expect(@cash_register.inventory.first).to be_instance_of(Product)
+    end
+
+    it 'should have loaded existing cart\'s products in cart.csv' do
+      expect(@cash_register).to respond_to(:cart)
+      expect(@cash_register.cart.size).to eq(2)
+      expect(@cash_register.cart.first).to be_a(String)
+    end
+  end
 end
