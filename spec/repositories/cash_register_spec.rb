@@ -76,4 +76,19 @@ describe 'CashRegister' do
       expect(@cash_register.cart.first).to be_a(String)
     end
   end
+
+  describe '#scan' do
+    it 'should take an argument (a product to be added to the cart)' do
+      expect(@cash_register).to respond_to(:scan)
+      expect(CashRegister.instance_method(:scan).arity).to eq(1)
+    end
+
+    it 'should add the new product to the cart' do
+      size_before = @cash_register.cart.size
+      product = @cash_register.inventory.first
+      @cash_register.scan(product)
+      
+      expect(@cash_register.cart.size).to eq(size_before + 1)
+    end
+  end
 end
