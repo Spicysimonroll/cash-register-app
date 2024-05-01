@@ -33,4 +33,8 @@ class View
     gets.chomp.to_i - 1
   end
 
+  def display_message(message)
+    puts ''
+    puts message
+  end
 end
