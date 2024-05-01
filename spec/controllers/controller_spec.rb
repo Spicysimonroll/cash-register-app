@@ -129,4 +129,23 @@ describe 'Controller' do
       end
     end
   end
+
+  describe '#checkout' do
+    it 'should not take any argument' do
+      expect(controller).to respond_to(:checkout)
+      expect(Controller.instance_method(:checkout).arity).to eq(0)
+    end
+
+    it 'should clear out the cart' do
+      allow($stdout).to receive(:puts)
+      expect(cash_register.cart).not_to be_empty
+
+      controller.checkout
+
+      expect($stdout).to have_received(:puts).with(/.*check.*out.*cart/i)
+      expect(cash_register.cart).to be_empty
+
+      Helper.write_csv(cart3_csv, cart3_with_headers)
+    end
+  end
 end
