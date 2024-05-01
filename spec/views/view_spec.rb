@@ -55,4 +55,24 @@ describe 'View' do
       expect($stdout).to have_received(:puts).with(/.*Strawberry.*/)
     end
   end
+
+  describe '#ask_for' do
+    it 'should take one argument (action)' do
+      expect(view).to respond_to(:ask_for)
+      expect(View.instance_method(:ask_for).arity).to eq(1)
+    end
+
+    it 'should return an index' do
+      allow_any_instance_of(Object).to receive(:gets).and_return("2\n")
+      result = view.ask_for(:add)
+
+      allow_any_instance_of(Object).to receive(:gets).and_return("test\n")
+      result2 = view.ask_for(:add)
+
+      expect(result).to eq(1)
+      expect(result).to be_a(Integer)
+      expect(result2).to eq(-1)
+      expect(result2).to be_a(Integer)
+    end
+  end
 end
