@@ -75,4 +75,21 @@ describe 'View' do
       expect(result2).to be_a(Integer)
     end
   end
+
+  describe '#display_message' do
+    it 'should take one an argument (a message)' do
+      expect(view).to respond_to(:display_message)
+      expect(View.instance_method(:display_message).arity).to eq(1)
+    end
+
+    it 'should display the correct message' do
+      allow($stdout).to receive(:puts)
+
+      view.display_message('Hello world')
+      view.display_message('This is a test message')
+
+      expect($stdout).to have_received(:puts).with('Hello world')
+      expect($stdout).to have_received(:puts).with('This is a test message')
+    end
+  end
 end
