@@ -24,6 +24,11 @@ class CashRegister
     save_cart
   end
 
+  def clear_cart
+    @cart = []
+    save_cart
+  end
+
   private
 
   def load_inventory
