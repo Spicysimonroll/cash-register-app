@@ -85,10 +85,25 @@ describe 'CashRegister' do
 
     it 'should add the new product to the cart' do
       size_before = @cash_register.cart.size
-      product = @cash_register.inventory.first
+      product = @cash_register.cart.first
       @cash_register.scan(product)
-      
+
       expect(@cash_register.cart.size).to eq(size_before + 1)
+    end
+  end
+
+  describe '#unscan' do
+    it 'should take an argument (a product to be removed from the cart)' do
+      expect(@cash_register).to respond_to(:unscan)
+      expect(CashRegister.instance_method(:unscan).arity).to eq(1)
+    end
+
+    it 'should remove the new product from the cart' do
+      size_before = @cash_register.cart.size
+      product = @cash_register.cart.first
+      @cash_register.unscan(product)
+
+      expect(@cash_register.cart.size).to eq(size_before - 1)
     end
   end
 end
