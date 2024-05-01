@@ -34,4 +34,9 @@ class Controller
       @view.display_message('ERROR! The index provided does not exist')
     end
   end
+
+  def checkout
+    @view.display_message('Checking out the cart...')
+    @cash_register.clear_cart
+  end
 end
