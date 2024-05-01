@@ -25,4 +25,21 @@ describe 'Controller' do
     puts "cash_register: #{cash_register.inspect}"
     puts "controller: #{controller.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take one argument (the cash register)' do
+      expect(Controller.instance_method(:initialize).arity).to eq(1)
+      expect(controller).to be_a(Controller)
+    end
+
+    shared_examples 'instance variable initialization' do |instance_variable, type|
+      it "should initialize the instance with a #{instance_variable} instance variable" do
+        expect(controller.instance_variable_defined?(instance_variable)).to be(true)
+        expect(controller.instance_variable_get(instance_variable)).to be_a(type)
+      end
+    end
+
+    include_examples 'instance variable initialization', :@view, View
+    include_examples 'instance variable initialization', :@cash_register, CashRegister
+  end
 end
