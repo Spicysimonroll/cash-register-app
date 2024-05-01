@@ -42,4 +42,22 @@ describe 'Controller' do
     include_examples 'instance variable initialization', :@view, View
     include_examples 'instance variable initialization', :@cash_register, CashRegister
   end
+
+  describe '#display_cart_products' do
+    it 'should not take any argument' do
+      expect(controller).to respond_to(:display_cart_products)
+      expect(Controller.instance_method(:display_cart_products).arity).to eq(0)
+    end
+
+    it 'should display all the products in the cart' do
+      allow($stdout).to receive(:puts)
+
+      controller.display_cart_products
+
+      expect($stdout).to have_received(:puts).with(/.*1.*GR1.*/)
+      expect($stdout).to have_received(:puts).with(/.*3.*CF1.*/)
+      expect($stdout).to have_received(:puts).with(/.*1.*SR1.*/)
+      expect($stdout).to have_received(:puts).with(/.*total.*30.57.*/)
+    end
+  end
 end
