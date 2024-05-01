@@ -21,4 +21,17 @@ class Controller
       @view.display_message('ERROR! The index provided does not exist')
     end
   end
+
+  def remove_product_from_cart
+    cart = @cash_register.cart.uniq
+    cart_inventory = @cash_register.inventory.select { |p| cart.include?(p.code) }
+    @view.display_inventory(cart_inventory)
+    index = @view.ask_for(:remove)
+    if index > -1 && index < cart_inventory.size
+      product = cart_inventory[index]
+      @cash_register.unscan(product)
+    else
+      @view.display_message('ERROR! The index provided does not exist')
+    end
+  end
 end
