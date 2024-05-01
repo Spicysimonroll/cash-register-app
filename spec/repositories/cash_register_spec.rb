@@ -1,4 +1,5 @@
 require_relative '../../lib/repositories/cash_register'
+require_relative '../support/helper'
 
 describe 'CashRegister' do
   let(:inventory_csv) { 'spec/support/inventory.csv' }
@@ -35,6 +36,12 @@ describe 'CashRegister' do
     ]
   end
 
+  before do
+    Helper.write_csv(inventory_csv, inventory_with_headers)
+    Helper.write_csv(cart1_csv, cart1_with_headers)
+    @cash_register = CashRegister.new(inventory_csv, cart1_csv)
+  end
+
   it 'should be a class' do
     expect(Object.const_defined?('CashRegister')).to be(true)
   end
@@ -48,5 +55,6 @@ describe 'CashRegister' do
     puts "cart1_with_headers: #{cart1_with_headers.inspect}"
     puts "cart2_with_headers: #{cart2_with_headers.inspect}"
     puts "cart3_with_headers: #{cart3_with_headers.inspect}"
+    puts "@cash_register: #{@cash_register.inspect}"
   end
 end
