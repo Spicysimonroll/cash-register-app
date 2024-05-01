@@ -19,4 +19,12 @@ class View
       puts '+--------------------+'
     end
   end
+
+  def display_inventory(inventory)
+    puts ''
+    puts 'Here\'s a list of the available products:'
+    puts ''
+    inventory.each_with_index { |product, index| puts "#{index + 1}. #{product.name} (€#{product.price})" }
+  end
+
 end
