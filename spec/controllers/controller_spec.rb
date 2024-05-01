@@ -95,4 +95,38 @@ describe 'Controller' do
       end
     end
   end
+
+  describe '#remove_product_from_cart' do
+    it 'should not take any argument' do
+      expect(controller).to respond_to(:remove_product_from_cart)
+      expect(Controller.instance_method(:remove_product_from_cart).arity).to eq(0)
+    end
+
+    context 'with a existing index' do
+      it 'displays inventory, asks for index and remove product from cart' do
+        size_before = cash_register.cart.size
+        allow(controller.instance_variable_get(:@view)).to receive(:ask_for).and_return(0)
+        controller.remove_product_from_cart
+
+        expect(cash_register.cart.count('GR1')).to eq(0)
+        expect(cash_register.cart.count('CF1')).to eq(3)
+        expect(cash_register.cart.count('SR1')).to eq(1)
+        expect(cash_register.cart.size).to eq(size_before - 1)
+
+        Helper.write_csv(cart3_csv, cart3_with_headers)
+      end
+    end
+
+    context 'with a non-existing index' do
+      it 'displays products in the cart, asks for index and display an error message' do
+        size_before = cash_register.cart.size
+        allow(controller.instance_variable_get(:@view)).to receive(:ask_for).and_return(-1)
+        allow($stdout).to receive(:puts)
+        controller.remove_product_from_cart
+
+        expect(cash_register.cart.size).to eq(size_before)
+        expect($stdout).to have_received(:puts).with(/.*error.*index.*/i)
+      end
+    end
+  end
 end
