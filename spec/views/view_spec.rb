@@ -1,4 +1,5 @@
 require_relative '../../lib/views/view'
+require_relative '../../lib/models/product'
 
 describe 'View' do
   let(:view) { View.new }
@@ -31,6 +32,27 @@ describe 'View' do
       view.display_cart(empty_cart)
 
       expect($stdout).to have_received(:puts).with(/.*cart.*empty.*/i)
+    end
+  end
+
+  describe '#display_inventory' do
+    it 'should take one argument (the inventory)' do
+      expect(view).to respond_to(:display_inventory)
+      expect(View.instance_method(:display_inventory).arity).to eq(1)
+    end
+
+    it 'should implement a method to display the products in the inventory' do
+      coffee = Product.new({ code: 'CF1', name: 'Coffee', price: 11.23 })
+      green_tea = Product.new({ code: 'GR1', name: 'Green Tea', price: 3.11 })
+      strawberry = Product.new({ code: 'SR1', name: 'Strawberry', price: 5 })
+      inventory = [green_tea, strawberry, coffee]
+
+      allow($stdout).to receive(:puts)
+      view.display_inventory(inventory)
+
+      expect($stdout).to have_received(:puts).with(/.*Green Tea.*/)
+      expect($stdout).to have_received(:puts).with(/.*Coffee.*/)
+      expect($stdout).to have_received(:puts).with(/.*Strawberry.*/)
     end
   end
 end
