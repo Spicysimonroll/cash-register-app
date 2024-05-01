@@ -85,7 +85,7 @@ describe 'CashRegister' do
 
     it 'should add the new product to the cart' do
       size_before = @cash_register.cart.size
-      product = @cash_register.cart.first
+      product = @cash_register.inventory.first
       @cash_register.scan(product)
 
       expect(@cash_register.cart.size).to eq(size_before + 1)
@@ -100,7 +100,7 @@ describe 'CashRegister' do
 
     it 'should remove the new product from the cart' do
       size_before = @cash_register.cart.size
-      product = @cash_register.cart.first
+      product = @cash_register.inventory.first
       @cash_register.unscan(product)
 
       expect(@cash_register.cart.size).to eq(size_before - 1)
@@ -118,6 +118,27 @@ describe 'CashRegister' do
 
       expect(@cash_register.cart).to be_empty
       expect(@cash_register.cart.size).to eq(0)
+    end
+  end
+
+  describe '#total_price' do
+    it 'should not take any argument' do
+      expect(@cash_register).to respond_to(:total_price)
+      expect(CashRegister.instance_method(:total_price).arity).to eq(0)
+    end
+
+    it 'should return the cart correct total price' do
+      expect(@cash_register.total_price).to eq(3.11)
+
+      Helper.write_csv(cart2_csv, cart2_with_headers)
+      cash_register2 = CashRegister.new(inventory_csv, cart2_csv)
+
+      expect(cash_register2.total_price).to eq(16.61)
+
+      Helper.write_csv(cart3_csv, cart3_with_headers)
+      cash_register3 = CashRegister.new(inventory_csv, cart3_csv)
+
+      expect(cash_register3.total_price).to eq(30.57)
     end
   end
 end
