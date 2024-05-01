@@ -13,6 +13,11 @@ class CashRegister
     load_cart
   end
 
+  def scan(product)
+    @cart << product.code
+    save_cart
+  end
+
   private
 
   def load_inventory
@@ -24,6 +29,16 @@ class CashRegister
       quantity = row[0].to_i
       product_code = row[1]
       quantity.times { @cart << product_code }
+    end
+  end
+
+  def save_cart
+    CSV.open(@cart_csv, 'w') do |csv|
+      csv << %w[quantity product]
+      @cart.uniq.each do |product_code|
+        count = @cart.count(product_code)
+        csv << [count, product_code]
+      end
     end
   end
 end
