@@ -27,4 +27,10 @@ class View
     inventory.each_with_index { |product, index| puts "#{index + 1}. #{product.name} (€#{product.price})" }
   end
 
+  def ask_for(action)
+    puts ''
+    puts "What's the index of the product you want to #{action} #{action == :add ? 'to' : 'from'} the cart?"
+    gets.chomp.to_i - 1
+  end
+
 end
