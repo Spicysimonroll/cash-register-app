@@ -18,6 +18,12 @@ class CashRegister
     save_cart
   end
 
+  def unscan(product)
+    index = @cart.find_index(product.code)
+    @cart.delete_at(index)
+    save_cart
+  end
+
   private
 
   def load_inventory
