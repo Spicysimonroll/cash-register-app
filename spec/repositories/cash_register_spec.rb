@@ -106,4 +106,18 @@ describe 'CashRegister' do
       expect(@cash_register.cart.size).to eq(size_before - 1)
     end
   end
+
+  describe '#clear_cart' do
+    it 'should not take any argument' do
+      expect(@cash_register).to respond_to(:clear_cart)
+      expect(CashRegister.instance_method(:clear_cart).arity).to eq(0)
+    end
+
+    it 'should clear the cart' do
+      @cash_register.clear_cart
+
+      expect(@cash_register.cart).to be_empty
+      expect(@cash_register.cart.size).to eq(0)
+    end
+  end
 end
