@@ -1,5 +1,6 @@
 require_relative '../../lib/controllers/controller'
 require_relative '../../lib/repositories/cash_register'
+require_relative '../support/helper'
 
 describe 'Controller' do
   let(:inventory_csv) { 'spec/support/inventory.csv' }
@@ -58,6 +59,40 @@ describe 'Controller' do
       expect($stdout).to have_received(:puts).with(/.*3.*CF1.*/)
       expect($stdout).to have_received(:puts).with(/.*1.*SR1.*/)
       expect($stdout).to have_received(:puts).with(/.*total.*30.57.*/)
+    end
+  end
+
+  describe '#add_product_to_cart' do
+    it 'should not take any argument' do
+      expect(controller).to respond_to(:add_product_to_cart)
+      expect(Controller.instance_method(:add_product_to_cart).arity).to eq(0)
+    end
+
+    context 'with a existing index' do
+      it 'displays inventory, asks for index and adds product to cart' do
+        size_before = cash_register.cart.size
+        allow(controller.instance_variable_get(:@view)).to receive(:ask_for).and_return(0)
+        controller.add_product_to_cart
+
+        expect(cash_register.cart.count('GR1')).to eq(2)
+        expect(cash_register.cart.count('CF1')).to eq(3)
+        expect(cash_register.cart.count('SR1')).to eq(1)
+        expect(cash_register.cart.size).to eq(size_before + 1)
+
+        Helper.write_csv(cart3_csv, cart3_with_headers)
+      end
+    end
+
+    context 'with a non-existing index' do
+      it 'displays inventory, asks for index and display an error message' do
+        size_before = cash_register.cart.size
+        allow(controller.instance_variable_get(:@view)).to receive(:ask_for).and_return(-1)
+        allow($stdout).to receive(:puts)
+        controller.add_product_to_cart
+
+        expect(cash_register.cart.size).to eq(size_before)
+        expect($stdout).to have_received(:puts).with(/.*error.*index.*/i)
+      end
     end
   end
 end
