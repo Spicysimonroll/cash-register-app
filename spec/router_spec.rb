@@ -20,4 +20,21 @@ describe 'Router' do
     puts "controller: #{controller.inspect}"
     puts "router: #{router.inspect}"
   end
+
+  describe '#initialize' do
+    it 'should take two arguments' do
+      expect(router).to be_a(Router)
+      expect(Router.instance_method(:initialize).arity).to eq(1)
+    end
+
+    shared_examples 'instance variable initialization' do |instance_variable, type|
+      it "should initialize the instance with a #{instance_variable} instance variable" do
+        expect(router.instance_variable_defined?(instance_variable)).to be(true)
+        expect(router.instance_variable_get(instance_variable)).to be_a(type)
+      end
+    end
+
+    include_examples 'instance variable initialization', :@controller, Controller
+    include_examples 'instance variable initialization', :@running, TrueClass
+  end
 end
