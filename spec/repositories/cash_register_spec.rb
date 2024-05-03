@@ -68,6 +68,13 @@ describe 'CashRegister' do
       expect(@cash_register).to respond_to(:inventory)
       expect(@cash_register.inventory.size).to eq(inventory_with_headers.size - 1)
       expect(@cash_register.inventory.first).to be_instance_of(Product)
+
+      invalid_product = [['SR1', 'Strawberry Milkshake', 15]]
+      Helper.write_csv(inventory_csv, inventory_with_headers + invalid_product)
+      new_cash_register = CashRegister.new(inventory_csv, cart1_csv)
+
+      expect(new_cash_register.inventory.size).to eq(@cash_register.inventory.size)
+      expect(new_cash_register.inventory.last.name).to eq('Coffee')
     end
 
     it 'should have loaded existing cart\'s products in cart.csv' do
