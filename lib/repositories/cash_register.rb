@@ -55,7 +55,19 @@ class CashRegister
   private
 
   def load_inventory
-    CSV.foreach(@inventory_csv, headers: true) { |row| @inventory << Product.new({ code: row[0], name: row[1], price: row[2] }) }
+    codes = []
+    line_number = 1
+    CSV.foreach(@inventory_csv, headers: true).with_index do |row, index|
+      line_number += 1
+      if codes.include?(row[0])
+        puts "Line #{line_number} of `inventory.csv` was not added to the inventory because its code is already in use"
+        puts ''
+        next
+      else
+        @inventory << Product.new({ code: row[0], name: row[1], price: row[2] })
+        codes << row[0]
+      end
+    end
   end
 
   def load_cart
