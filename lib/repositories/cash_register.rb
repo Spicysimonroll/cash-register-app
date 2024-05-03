@@ -57,7 +57,7 @@ class CashRegister
   def load_inventory
     codes = []
     line_number = 1
-    CSV.foreach(@inventory_csv, headers: true) do |row|
+    CSV.foreach(@inventory_csv, headers: true).with_index do |row, index|
       line_number += 1
       if codes.include?(row[0])
         puts "Line #{line_number} of `inventory.csv` was not added to the inventory because its code is already in use"
