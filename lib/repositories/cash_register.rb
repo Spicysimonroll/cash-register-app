@@ -49,7 +49,7 @@ class CashRegister
       tot += product.price * quantity unless products_in_promo.include?(product_code)
     end
 
-    tot
+    tot.round(2)
   end
 
   private
