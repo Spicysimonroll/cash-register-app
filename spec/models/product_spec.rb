@@ -2,7 +2,7 @@ require_relative '../../lib/models/product'
 
 describe 'Product' do
   let(:empty_product) { Product.new }
-  let(:product) { Product.new({ code: 'CF1', name: 'Coffee', price: 11.23 }) }
+  let(:product) { Product.new(code: 'CF1', name: 'Coffee', price: 11.23) }
 
   it 'should be a class' do
     expect(Object.const_defined?('Product')).to be(true)
@@ -14,24 +14,38 @@ describe 'Product' do
   end
 
   describe '#initialize' do
-    it 'should take one argument or none' do
+    it 'should take three optional arguments' do
       expect(Product.instance_method(:initialize).arity).to eq(-1)
+      expect(Product.instance_method(:initialize).parameters).to include(%i[key code], %i[key name], %i[key price])
       expect(product).to be_a(Product)
       expect(empty_product).to be_a(Product)
     end
 
     shared_examples 'attribute initialization' do |attribute, product_class|
-      it "should initialize the instance with a #{attribute} variable" do
+      it "should initialize the instance with a #{attribute} instance variable" do
         expect(product.instance_variable_defined?(attribute)).to be(true)
         expect(product.instance_variable_get(attribute)).to be_a(product_class)
         expect(empty_product.instance_variable_get(attribute)).to be_a(NilClass)
       end
     end
 
+    # include_examples 'attribute initialization', :@id, Integer
     include_examples 'attribute initialization', :@code, String
     include_examples 'attribute initialization', :@name, String
     include_examples 'attribute initialization', :@price, Float
   end
+
+  # describe '#id' do
+  #   it 'should allow read-only access' do
+  #     expect(product).to respond_to(:id)
+  #     expect(product).not_to respond_to(:id=)
+  #   end
+
+  #   it 'should return the correct id' do
+  #     expect(product.id).to eq(1)
+  #     expect(empty_product.id).to eq(nil)
+  #   end
+  # end
 
   describe '#code' do
     it 'should allow read-only access' do

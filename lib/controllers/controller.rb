@@ -7,31 +7,33 @@ class Controller
   end
 
   def display_cart_products
-    @view.display_cart(@cash_register.cart, @cash_register.total_price)
+    @view.display_cart(cart: @cash_register.cart, total_price: @cash_register.total_price)
   end
 
   def add_product_to_cart
     inventory = @cash_register.inventory
-    @view.display_inventory(inventory)
-    index = @view.ask_for(:add)
-    if index > -1 && index < inventory.size
-      product = inventory[index]
-      @cash_register.scan(product)
+    @view.display_inventory(inventory: inventory)
+    code = @view.ask_for(:add)
+    quantity = @view.ask_for_number(:add)
+    if inventory.keys.include?(code)
+      @cash_register.scan(product: inventory[code], quantity: quantity)
     else
-      @view.display_message('ERROR! The index provided does not exist')
+      @view.display_message('ERROR! The code provided does not exist')
     end
   end
 
   def remove_product_from_cart
-    cart = @cash_register.cart.uniq
-    cart_inventory = @cash_register.inventory.select { |p| cart.include?(p.code) }
-    @view.display_inventory(cart_inventory)
-    index = @view.ask_for(:remove)
-    if index > -1 && index < cart_inventory.size
-      product = cart_inventory[index]
-      @cash_register.unscan(product)
-    else
-      @view.display_message('ERROR! The index provided does not exist')
+    cart = @cash_register.cart
+    cart_inventory = @cash_register.inventory.select { |key, _| cart.keys.include?(key) }
+    @view.display_inventory(inventory: cart_inventory)
+    code = @view.ask_for(:remove)
+    quantity = @view.ask_for_number(:add)
+    if cart_inventory.keys.include?(code) && quantity <= cart[code][:quantity]
+      @cash_register.unscan(product: cart_inventory[code], quantity: quantity)
+    elsif cart_inventory.keys.include?(code) && quantity > cart[code][:quantity]
+      @view.display_message('ERROR! You can\'t remove more than the quantity in the cart')
+    elsif !cart_inventory.keys.include?(code)
+      @view.display_message('ERROR! The code provided does not exist')
     end
   end
 

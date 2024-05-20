@@ -1,10 +1,14 @@
 class Discount
-  def initialize(name, amount)
-    @name = name
-    @amount = amount
+  def initialize(description:, products_on_promo:)
+    @description = description
+    @products_on_promo = Set.new(products_on_promo)
   end
 
-  def apply(total_price)
-    total_price - @amount
+  def applicable?(product_code:)
+    @products_on_promo.include?(product_code)
+  end
+
+  def apply(products:)
+    raise NotImplementedError, "#{self.class} does not implement apply(product) method"
   end
 end

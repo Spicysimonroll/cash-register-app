@@ -1,11 +1,18 @@
 class BulkPurchaseDiscount < Discount
-  def initialize(name, amount, new_price, threshold)
-    super(name, amount)
-    @discounted_price = new_price
+  def initialize(description:, products_on_promo:, new_price:, threshold:)
+    super(description: description, products_on_promo: products_on_promo)
+    @new_price = new_price
     @threshold = threshold
   end
 
-  def apply(original_price, product_quantity)
-    product_quantity < @threshold ? product_quantity * original_price : product_quantity * @discounted_price
+  def apply(products:)
+    total_quantity = products.sum { |_, v| v[:quantity] }
+    tot = 0
+    products.each_value do |hash|
+      quantity = hash[:quantity]
+      price = hash[:product].price
+      tot += total_quantity >= @threshold ? quantity * (price - @new_price) : 0
+    end
+    tot.round(2)
   end
 end

@@ -1,36 +1,44 @@
 class View
-  def display_cart(cart, tot = 0)
+  def display_cart(cart:, total_price: 0)
+    puts '+--------------------+'
     if cart.empty?
-      puts '+--------------------+'
       puts '| Your cart is empty |'
       puts '+----------+---------+'
     else
-      puts '+--------------------+'
       puts '|      Your cart     |'
       puts '+----------+---------+'
       puts '| quantity | product |'
       puts '+--------------------+'
-      cart.uniq.each do |product_code|
-        count = cart.count(product_code)
+      cart.each do |_, hash|
+        count = hash[:quantity]
+        product_code = hash[:product].code
         puts "|#{' ' * 4}#{count}#{' ' * (6 - count.to_s.size)}|#{' ' * 3}#{product_code}#{' ' * 3}|"
         puts '+--------------------+'
       end
-      puts "| total#{' ' * (11 - tot.to_s.size)}€#{tot}  |"
+      puts "| total#{' ' * (11 - total_price.to_s.size)}€#{total_price}  |"
       puts '+--------------------+'
     end
   end
 
-  def display_inventory(inventory)
+  def display_inventory(inventory:)
     puts ''
     puts 'Here\'s a list of the available products:'
     puts ''
-    inventory.each_with_index { |product, index| puts "#{index + 1}. #{product.name} (€#{product.price})" }
+    inventory.each do |key, hash|
+      puts "#{key} - #{hash.name} (#{hash.price})"
+    end
   end
 
   def ask_for(action)
     puts ''
-    puts "What's the index of the product you want to #{action} #{action == :add ? 'to' : 'from'} the cart?"
-    gets.chomp.to_i - 1
+    puts "What's the code of the product you want to #{action} #{action == :add ? 'to' : 'from'} the cart?"
+    gets.chomp.upcase.to_sym
+  end
+
+  def ask_for_number(action)
+    puts ''
+    puts "How many would you like to #{action} #{action == :add ? 'to' : 'from'} the cart?"
+    gets.chomp.to_i
   end
 
   def display_message(message)

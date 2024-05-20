@@ -5,7 +5,7 @@ require_relative '../lib/repositories/cash_register'
 describe 'Router' do
   let(:inventory_csv) { 'spec/support/inventory.csv'}
   let(:cart3_csv) { 'spec/support/cart3.csv'}
-  let(:cash_register) { CashRegister.new(inventory_csv, cart3_csv) }
+  let(:cash_register) { CashRegister.new(inventory_csv: inventory_csv, cart_csv: cart3_csv) }
   let(:controller) { Controller.new(cash_register) }
   let(:router) { Router.new(controller) }
 

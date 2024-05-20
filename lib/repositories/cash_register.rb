@@ -1,4 +1,5 @@
 require 'csv'
+require 'set'
 require_relative '../models/product'
 require_relative '../models/discount'
 require_relative '../models/percentage_discount'
@@ -8,63 +9,56 @@ require_relative '../models/bulk_purchase_discount'
 class CashRegister
   attr_reader :inventory, :cart
 
-  def initialize(inventory_csv, cart_csv)
+  def initialize(inventory_csv:, cart_csv:)
     @inventory_csv = inventory_csv
     @cart_csv = cart_csv
-    @inventory = []
-    @cart = []
+    @inventory = {}
+    @cart = {}
+    @rules = set_rules
+    # @next_id = 1
     load_inventory
     load_cart
   end
 
-  def scan(product)
-    @cart << product.code
+  def scan(product:, quantity:)
+    code = product.code.to_sym
+    @cart.keys.include?(code) ? @cart[code][:quantity] += quantity : @cart[code] = { quantity: quantity, product: product }
     save_cart
   end
 
-  def unscan(product)
-    index = @cart.find_index(product.code)
-    @cart.delete_at(index)
+  def unscan(product:, quantity:)
+    code = product.code.to_sym
+    @cart[code][:quantity] -= quantity
+    @cart.delete_if { |_, v| v[:quantity].zero? }
     save_cart
   end
 
   def clear_cart
-    @cart = []
+    @cart = {}
     save_cart
   end
 
   def total_price
-    tot = 0
-    green_tea_promo = BuyOneGetOneFreeDiscount.new('Buy one green tea and get one free', 0)
-    strawberry_promo = BulkPurchaseDiscount.new('Buy 3 or more strawberries and pay €4.50 each', 0, 4.5, 3)
-    coffee_promo = PercentageDiscount.new('Buy 3 or more coffee and and pay 2/3 of the original price', 0, (1 / 3.0), 3)
-    products_in_promo = %w[GR1 SR1 CF1]
-
-    @cart.uniq.each do |product_code|
-      product = @inventory.find { |p| p.code == product_code }
-      quantity = @cart.count(product_code)
-      tot += green_tea_promo.apply(product.price, quantity) if product_code == 'GR1'
-      tot += strawberry_promo.apply(product.price, quantity) if product_code == 'SR1'
-      tot += coffee_promo.apply(product.price, quantity) if product_code == 'CF1'
-      tot += product.price * quantity unless products_in_promo.include?(product_code)
-    end
-
-    tot.round(2)
+    (subtotal - discounts).round(2)
   end
 
   private
 
   def load_inventory
-    codes = []
-    line_number = 1
-    CSV.foreach(@inventory_csv, headers: true).with_index do |row, index|
-      line_number += 1
+    codes = Set.new
+    line = 1
+    CSV.foreach(@inventory_csv, headers: true) do |row|
+      line += 1
       if codes.include?(row[0])
-        puts "Line #{line_number} of `inventory.csv` was not added to the inventory because its code is already in use"
+        puts "Line #{line} of `inventory.csv` was not added to the inventory because its code is already in use"
         puts ''
         next
       else
-        @inventory << Product.new({ code: row[0], name: row[1], price: row[2] })
+        @inventory[row[0].to_sym] = Product.new(
+          code: row[0],
+          name: row[1],
+          price: row[2]
+        )
         codes << row[0]
       end
     end
@@ -72,19 +66,54 @@ class CashRegister
 
   def load_cart
     CSV.foreach(@cart_csv, headers: true) do |row|
+      code = row[1].to_sym
       quantity = row[0].to_i
-      product_code = row[1]
-      quantity.times { @cart << product_code }
+      product = @inventory[code]
+      @cart[code] = { quantity: quantity, product: product }
     end
   end
 
   def save_cart
     CSV.open(@cart_csv, 'w') do |csv|
-      csv << %w[quantity product]
-      @cart.uniq.each do |product_code|
-        count = @cart.count(product_code)
-        csv << [count, product_code]
+      csv << %w[quantity product_id]
+      @cart.each do |key, hash|
+        csv << [hash[:quantity], key]
       end
+    end
+  end
+
+  def subtotal
+    @cart.sum { |_, hash| hash[:quantity] * hash[:product].price }
+  end
+
+  def set_rules
+    {
+      1 => BuyOneGetOneFreeDiscount.new(description: 'Buy one and get one free', products_on_promo: [:GR1]),
+      2 => BulkPurchaseDiscount.new(
+            description: 'Buy 3 or more and pay €4.50 each',
+            products_on_promo: [:SR1],
+            new_price: 4.5,
+            threshold: 3
+          ),
+      # 3 => PercentageDiscount.new(
+      #       description: 'Buy 3 or more and and pay 2/3 of the original price',
+      #       products_on_promo: [:CF1],
+      #       percentage: (1 / 3.0),
+      #       threshold: 3
+      #     )
+      3 => PercentageDiscount.new(
+            description: 'Buy 3 or more coffees of any kind and and pay half of the original price',
+            products_on_promo: [:CF1, :DC1],
+            percentage: (1 / 2.0),
+            threshold: 3
+          )
+    }
+  end
+
+  def discounts
+    @rules.sum do |_, rule|
+      applicable_products = @cart.select { |key, _| rule.applicable?(product_code: key) }
+      rule.apply(products: applicable_products)
     end
   end
 end
